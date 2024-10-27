@@ -14,7 +14,7 @@ export const CommentList: React.FC = () => {
         <Message text="Keine Kommentare vorhanden" />
       ) : (
         <div className="pt-4 pb-44">
-          <NestedComments children={roots} />
+          <NestedComments childrenComments={roots} />
         </div>
       )}
       <AddCommentForm className="fixed flex w-2/3 bottom-4 left-1/2 -translate-x-1/2" />
