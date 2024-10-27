@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import "@fontsource/roboto/300.css";
+@import "@fontsource/roboto/400.css";
+@import "@fontsource/roboto/500.css";
+@import "@fontsource/roboto/700.css";
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+:root {
+  font-family: "Roboto", sans-serif;
+  font-size: 14pt;
+  color: #fff;
+}
+
+* {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: #131516;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 100;
+}
+
+p {
+  word-break: break-word;
+  font-size: 1rem;
+}
+
+button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #676666;
+  color: #fff;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.default-transition {
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+input {
+  background-color: #ffffff;
+  color: #000000;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5rem;
+  padding: 0.5rem 1rem;
+}
+
+input:focus {
+  outline: none;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.75rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.fade-in {
+  animation: fadeIn 0.1s ease;
+}
+
+.fade-scale-in {
+  animation: fadeScaleIn 0.1s ease;
+}
