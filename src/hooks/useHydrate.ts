@@ -9,8 +9,8 @@ export const useHydrate = () => {
   const hydrate = async () => {
     try {
       const comments = await dbTyped.comments.toArray();
-      const { commentRecord, roots } = buildCommentRecord(comments);
-      dispatch(setStateAction({ comments: commentRecord, roots }));
+      const { commentRecord, rootIds } = buildCommentRecord(comments);
+      dispatch(setStateAction({ comments: commentRecord, rootIds }));
     } catch (error) {
       console.error("Failed to hydrate comments:", error);
     }
