@@ -1,40 +1,41 @@
 import React from "react";
-import * as R from "ramda";
 import { List } from "../../Atoms/List";
 import { ListItem } from "../../Atoms/ListItem";
 import CommentRow from "./CommentRow";
-import { useCommentChildren } from "../../../hooks/useCommentChildren";
-import { Comment } from "../../../db/db";
+import { useComment } from "../../../hooks/useComment";
+import equal from "fast-deep-equal";
 
 type NestedCommentsProps = {
-  childrenComments: Comment[];
+  commentIds: string[];
 };
 
-const NestedComments: React.FC<NestedCommentsProps> = ({ childrenComments }) => {
+const _NestedComments: React.FC<NestedCommentsProps> = ({ commentIds }) => {
   return (
     <List>
-      {childrenComments.map((childComment) => (
-        <CommentItem key={childComment.id} comment={childComment} />
+      {commentIds.map((id) => (
+        <CommentItem key={id} id={id} />
       ))}
     </List>
   );
 };
 
-export default React.memo(NestedComments, R.equals);
+const NestedComments = React.memo(_NestedComments, equal);
 
-const CommentItem = ({ comment }: { comment: Comment }) => {
-  const childrenComments = useCommentChildren(comment.id);
+const CommentItem = ({ id }: { id: string }) => {
+  const { comment, childrenIds } = useComment(id);
   if (!comment) {
     return null;
   }
   return (
     <ListItem key={comment.id} className="fade-scale-in">
       <CommentRow comment={comment} />
-      {childrenComments.length > 0 && (
+      {childrenIds.length > 0 && (
         <div className="ml-4 pl-4 border-l-2 border-l-highlight/50">
-          <NestedComments childrenComments={childrenComments} />
+          <NestedComments commentIds={childrenIds} />
         </div>
       )}
     </ListItem>
   );
 };
+
+export default NestedComments;

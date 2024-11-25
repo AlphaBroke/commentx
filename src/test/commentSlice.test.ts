@@ -10,7 +10,7 @@ describe("commentsSlice", () => {
     it("should add a root comment", () => {
       const initialState = {
         comments: {} as Record<string, Comment>,
-        roots: [] as Comment[],
+        rootIds: [] as string[],
       };
 
       const newComment: Comment = {
@@ -28,12 +28,13 @@ describe("commentsSlice", () => {
       );
 
       expect(newState.comments["1"]).toEqual(newComment);
-      expect(newState.roots).toContainEqual(newComment);
+      expect(newState.rootIds).toContainEqual(newComment.id);
     });
 
     it("should add a child comment and update parent", () => {
+      const parentId = "1";
       const parentComment: Comment = {
-        id: "1",
+        id: parentId,
         parentId: undefined,
         childrenIds: [],
         deleted: false,
@@ -43,7 +44,7 @@ describe("commentsSlice", () => {
 
       const initialState = {
         comments: { "1": parentComment },
-        roots: [parentComment],
+        rootIds: [parentId],
       };
 
       const childComment: Comment = {
@@ -67,8 +68,9 @@ describe("commentsSlice", () => {
 
   describe("deleteCommentAction", () => {
     it("should delete a root comment", () => {
+      const rootId = "1";
       const rootComment: Comment = {
-        id: "1",
+        id: rootId,
         parentId: undefined,
         childrenIds: [],
         deleted: false,
@@ -78,18 +80,19 @@ describe("commentsSlice", () => {
 
       const initialState = {
         comments: { "1": rootComment },
-        roots: [rootComment],
+        rootIds: [rootId],
       };
 
       const newState = commentsReducer(initialState, deleteCommentAction("1"));
 
       expect(newState.comments["1"].deleted).toBe(true);
-      expect(newState.roots).not.toContainEqual(rootComment);
+      expect(newState.rootIds).not.toContainEqual(rootComment);
     });
 
     it("should delete a child comment and update parent", () => {
+      const parentCommentId = "1";
       const parentComment: Comment = {
-        id: "1",
+        id: parentCommentId,
         parentId: undefined,
         childrenIds: ["2"],
         deleted: false,
@@ -108,7 +111,7 @@ describe("commentsSlice", () => {
 
       const initialState = {
         comments: { "1": parentComment, "2": childComment },
-        roots: [parentComment],
+        rootIds: [parentCommentId],
       };
 
       const newState = commentsReducer(initialState, deleteCommentAction("2"));
@@ -118,8 +121,9 @@ describe("commentsSlice", () => {
     });
 
     it("should recursively delete child comments", () => {
+      const parentCommentId = "1";
       const parentComment: Comment = {
-        id: "1",
+        id: parentCommentId,
         parentId: undefined,
         childrenIds: ["2"],
         deleted: false,
@@ -151,7 +155,7 @@ describe("commentsSlice", () => {
           "2": childComment,
           "3": grandChildComment,
         },
-        roots: [parentComment],
+        rootIds: [parentCommentId],
       };
 
       const newState = commentsReducer(initialState, deleteCommentAction("1"));
@@ -159,7 +163,7 @@ describe("commentsSlice", () => {
       expect(newState.comments["1"].deleted).toBe(true);
       expect(newState.comments["2"].deleted).toBe(true);
       expect(newState.comments["3"].deleted).toBe(true);
-      expect(newState.roots).not.toContainEqual(parentComment);
+      expect(newState.rootIds).not.toContainEqual(parentComment);
     });
   });
 
@@ -167,7 +171,7 @@ describe("commentsSlice", () => {
     it("should set the state with given comments and roots", () => {
       const initialState = {
         comments: {} as Record<string, Comment>,
-        roots: [] as Comment[],
+        rootIds: [] as string[],
       };
 
       const comment1: Comment = {
@@ -193,15 +197,15 @@ describe("commentsSlice", () => {
         "2": comment2,
       };
 
-      const newRoots = [comment1];
+      const newRoots = [comment1.id];
 
       const newState = commentsReducer(
         initialState,
-        setStateAction({ comments: newComments, roots: newRoots }),
+        setStateAction({ comments: newComments, rootIds: newRoots }),
       );
 
       expect(newState.comments).toEqual(newComments);
-      expect(newState.roots).toEqual(newRoots);
+      expect(newState.rootIds).toEqual(newRoots);
     });
   });
 });

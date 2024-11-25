@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import * as R from "ramda";
 import { type Comment } from "../../../db/db";
 import { AddCommentForm } from "../AddCommentForm";
 import { Button } from "../../Atoms/Button";
 import { IoChatbubble, IoTrash } from "react-icons/io5";
 import { waitForConfirm } from "../../../common/util";
 import { useCommentFns } from "../../../hooks/useCommentFns";
+import equal from "fast-deep-equal";
 
 const CommentRow = ({ comment }: { comment: Comment }) => {
   const [showInput, setShowInput] = useState<boolean>(false);
@@ -36,7 +36,7 @@ const CommentRow = ({ comment }: { comment: Comment }) => {
   );
 };
 
-export default React.memo(CommentRow, R.equals);
+export default React.memo(CommentRow, equal);
 
 type RowButtonsProps = {
   showInput: boolean;

@@ -1,4 +1,4 @@
-import { createSelector, createSlice } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store/store";
 import { Comment } from "../db/db";
@@ -6,7 +6,7 @@ import { compareByDate } from "../common/util";
 
 const initialState = {
   comments: {} as Record<string, Comment>,
-  roots: new Array<Comment>(),
+  rootIds: new Array<string>(),
 };
 
 export const commentsSlice = createSlice({
@@ -27,7 +27,7 @@ export const commentsSlice = createSlice({
           };
         }
       } else {
-        state.roots = [...state.roots, action.payload];
+        state.rootIds = [...state.rootIds, action.payload.id];
       }
     },
     deleteCommentAction: (state, action: PayloadAction<string>) => {
@@ -50,7 +50,7 @@ export const commentsSlice = createSlice({
           };
         }
       } else {
-        state.roots = state.roots.filter((root) => root.id !== action.payload);
+        state.rootIds = state.rootIds.filter((id) => id !== action.payload);
       }
 
       // Recursively delete all children
@@ -74,11 +74,11 @@ export const commentsSlice = createSlice({
       state,
       action: PayloadAction<{
         comments: Record<string, Comment>;
-        roots: Comment[];
+        rootIds: string[];
       }>,
     ) => {
       state.comments = action.payload.comments;
-      state.roots = action.payload.roots;
+      state.rootIds = action.payload.rootIds;
     },
   },
 });
@@ -88,22 +88,24 @@ export const { addCommentAction, deleteCommentAction, setStateAction } =
 
 export default commentsSlice.reducer;
 
-export const selectRoots = (state: RootState) => state.comments.roots;
-export const makeSelectCommentChildren = () =>
-  createSelector(
-    [
-      (state: RootState, id: string) => state.comments.comments[id],
-      (state: RootState) => state.comments.comments,
-    ],
-    (comment, comments) => {
-      const children = [];
-      for (const childId of comment?.childrenIds || []) {
-        const child = comments[childId];
-        if (child && !child.deleted) {
-          children.push(child);
-        }
-      }
-      const sortedChildren = [...children].sort(compareByDate);
-      return sortedChildren;
-    },
-  );
+export const selectRootIds = (state: RootState) => {
+  const roodIds = state.comments.rootIds;
+  const roots = roodIds.map((id) => state.comments.comments[id]);
+  roots.sort(compareByDate);
+  return roots.map((root) => root.id);
+};
+export const selectComment = (id: string) => (state: RootState) =>
+  state.comments.comments[id];
+export const selectCommentChildrenIds = (id: string) => (state: RootState) => {
+  const comments = state.comments.comments;
+  const comment = comments[id];
+  const children = [];
+  for (const childId of comment?.childrenIds || []) {
+    const child = comments[childId];
+    if (child && !child.deleted) {
+      children.push(child);
+    }
+  }
+  children.sort(compareByDate);
+  return children.map((child) => child.id);
+};
